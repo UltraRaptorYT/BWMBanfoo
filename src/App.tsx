@@ -145,7 +145,7 @@ function App() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      <h1 className="text-3xl font-bold text-center">BWM Banfoo</h1>
+      <h1 className="text-3xl font-bold text-center">BWM</h1>
       {hideAdmin == "false" && (
         <>
           <div className="flex flex-col gap-2">
