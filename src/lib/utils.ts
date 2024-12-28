@@ -10,13 +10,25 @@ export function useLocalStorageState<T>(
   key: string,
   defaultValue: T
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [state, setState] = useState(() => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : defaultValue;
+  const [state, setState] = useState<T>(() => {
+    if (typeof window === "undefined") return defaultValue; // Check for SSR
+    try {
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : defaultValue;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return defaultValue;
+    }
   });
 
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem(key, JSON.stringify(state));
+      } catch (error) {
+        console.error(`Error writing to localStorage key "${key}":`, error);
+      }
+    }
   }, [key, state]);
 
   return [state, setState];

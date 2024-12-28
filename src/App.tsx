@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Papa from "papaparse";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
 import {
@@ -15,12 +15,23 @@ import { cn, useLocalStorageState } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 function App() {
-  const [data, setData] = useState<{ [key: string]: any }[]>([]); // Define data type as an array of objects
+  const [data, setData] = useLocalStorageState<{ [key: string]: any }[]>(
+    "data",
+    []
+  ); // Define data type as an array of objects
   const [hideAdmin, setHideAdmin] = useLocalStorageState("hideAdmin", "false");
-  const [col, setCol] = useState<string>("");
-  const [eventName, setEventName] = useState<string>("");
-  const [attendance, setAttendance] = useState<{ [key: string]: any }[]>([]);
-  const [notRegistered, setNotRegistered] = useState<string[]>([]);
+  const [col, setCol] = useLocalStorageState<string>("col", "");
+  const [eventName, setEventName] = useLocalStorageState<string>(
+    "eventName",
+    ""
+  );
+  const [attendance, setAttendance] = useLocalStorageState<
+    { [key: string]: any }[]
+  >("attendance", []);
+  const [notRegistered, setNotRegistered] = useLocalStorageState<string[]>(
+    "notRegistered",
+    []
+  );
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     console.log(event.key);
@@ -33,7 +44,6 @@ function App() {
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const file = event.target.files?.[0]; // Optional chaining in case no file is selected
-
     if (!file) {
       toast.error("No file selected");
       return;
@@ -113,6 +123,14 @@ function App() {
     );
 
     XLSX.writeFile(workbook, `${eventName}_${new Date().toUTCString()}.xlsx`);
+  }
+
+  function clearData() {
+    setData([]);
+    setCol("");
+    setEventName("");
+    setAttendance([]);
+    setNotRegistered([]);
   }
 
   useEffect(() => {
@@ -202,13 +220,21 @@ function App() {
           placeholder="Enter Student ID"
         />
       </div>
-      <Button
-        onClick={() => exportData()}
-        disabled={data.length == 0 || col == "" || eventName == ""}
-        className={hideAdmin == "true" ? "hidden" : ""}
-      >
-        Export Attendance
-      </Button>
+      <div className={cn("flex gap-5", hideAdmin == "true" ? "hidden" : "")}>
+        <Button
+          onClick={() => exportData()}
+          disabled={data.length == 0 || col == "" || eventName == ""}
+        >
+          Export Attendance
+        </Button>
+        <Button
+          variant={"destructive"}
+          onClick={() => clearData()}
+          disabled={data.length == 0 || col == "" || eventName == ""}
+        >
+          Clear Data
+        </Button>
+      </div>
       <p className="text-sm text-gray-500">Click "`" to show configuration</p>
     </div>
   );
