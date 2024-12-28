@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useLocalStorageState } from "@/lib/utils";
+import { cn, useLocalStorageState } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 function App() {
@@ -127,7 +127,7 @@ function App() {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      <h1 className="text-xl font-bold text-center">BWM Banfoo</h1>
+      <h1 className="text-3xl font-bold text-center">BWM Banfoo</h1>
       {hideAdmin == "false" && (
         <>
           <div className="flex flex-col gap-2">
@@ -188,6 +188,9 @@ function App() {
           </Button>
         </>
       )}
+      <h1 className={cn(hideAdmin == "true" ? "" : "hidden", "text-2xl")}>
+        {eventName} Attendance
+      </h1>
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <Label htmlFor="studID">Student ID</Label>
         <Input
